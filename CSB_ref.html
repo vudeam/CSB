@@ -1,0 +1,2658 @@
+<!DOCTYPE HTML>
+<HTML>
+
+<!--
+порядок действий:
+сбросить куб — дать массиву стандартный вид
+спросить формулу (скрамбл)
+делать её по циклу, пока куб не соберётся (если в количестве итераций введён 0, то делать введённую формулу по нажатию клавиши)
+-->
+
+<head>
+	<title> CubeScrambleBruteforcer </title>
+
+	<meta charset = "utf-8" />
+	
+	<style>
+		.cube {
+			border: 1px solid #000000;
+		}
+		
+		body {
+			background: #fce6ff;
+		}
+		
+		h1 {
+			color: #ff0000;
+			font-family: Blippo;
+		}
+		
+		table.main td {
+			width: 400px;
+		}
+		
+		td {
+			width: 80px;
+			height: 80px;
+		}
+		
+		td.blank {
+			background: inherit;
+		}
+		
+		td.button {
+			width:70px;
+			height: 70px;
+			background: #a6a6a6;
+			border: 5px outset gray;
+			
+			font-size: 20px;
+			font-style: italic;
+			text-align: center;
+			text-shadow: black -1px -2px 0.5em;
+			letter-spacing: -1px;
+			
+			color: #ffffff;
+
+			cursor: pointer;
+		}
+		
+		/* возможно, работает быстрее без этого
+		td.button:hover {
+			width:70px;
+			height: 70px;
+			background: #a6a6a6;
+			border: 5px outset gray;
+			
+			font-size: 20px;
+			font-style: italic;
+			text-align: center;
+			text-shadow: #000000 -1px -2px 0.5em;
+			letter-spacing: -1px;
+			
+			color: #ff0000;
+		};*/
+	</style>
+</head>
+
+
+<body>
+	<table>
+		<tr id = "">
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "W1" class = "cube" bgcolor = "#ffffff"></td>
+			<td id = "W8" class = "cube" bgcolor = "#ffffff"></td>
+			<td id = "W7" class = "cube" bgcolor = "#ffffff"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td> <!-- конец таблицы куба -->
+			
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "button" onclick = "GetFormula()">Get Formula</td>
+			<td id = "" class = "button" onclick = "ApplyFormula(true)">Apply Formula</td>
+			<td id = "" class = "button" onclick = "ApplyFormulaN(true)">Apply Formula N times</td> <!-- ряд кнопок -->
+		</tr>
+		
+		<tr>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "W2" class = "cube" bgcolor = "#ffffff"></td>
+			<td id = "W0" class = "cube" bgcolor = "#ffffff"></td>
+			<td id = "W6" class = "cube" bgcolor = "#ffffff"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "button" onclick = "Move('U', true)">U</td>
+			<td id = "" class = "blank"></td>
+		</tr>
+		
+		<tr>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "W3" class = "cube" bgcolor = "#ffffff"></td>
+			<td id = "W4" class = "cube" bgcolor = "#ffffff"></td>
+			<td id = "W5" class = "cube" bgcolor = "#ffffff"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "button" onclick = "Move('L', true)">L</td>
+			<td id = "" class = "button" onclick = "Move('F', true)">F</td>
+			<td id = "" class = "button" onclick = "Move('R', true)">R</td>
+
+			<td id = "" class = "button" onclick = "Move('B', true)">B</td>
+		</tr>
+		
+		<tr>
+			<td id = "O1" class = "cube" bgcolor = "#ffa500"></td>
+			<td id = "O8" class = "cube" bgcolor = "#ffa500"></td>
+			<td id = "O7" class = "cube" bgcolor = "#ffa500"></td>
+			<td id = "G1" class = "cube" bgcolor = "#00cd00"></td>
+			<td id = "G8" class = "cube" bgcolor = "#00cd00"></td>
+			<td id = "G7" class = "cube" bgcolor = "#00cd00"></td>
+			<td id = "R1" class = "cube" bgcolor = "#ff0000"></td>
+			<td id = "R8" class = "cube" bgcolor = "#ff0000"></td>
+			<td id = "R7" class = "cube" bgcolor = "#ff0000"></td>
+			<td id = "B1" class = "cube" bgcolor = "#0000ff"></td>
+			<td id = "B8" class = "cube" bgcolor = "#0000ff"></td>
+			<td id = "B7" class = "cube" bgcolor = "#0000ff"></td>
+			
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "button" onclick = "Move('D', true)">D</td>
+			<td id = "" class = "blank"></td>
+			
+		</tr>
+		
+		<tr>
+			<td id = "O2" class = "cube" bgcolor = "#ffa500"></td>
+			<td id = "O0" class = "cube" bgcolor = "#ffa500"></td>
+			<td id = "O6" class = "cube" bgcolor = "#ffa500"></td>
+			<td id = "G2" class = "cube" bgcolor = "#00cd00"></td>
+			<td id = "G0" class = "cube" bgcolor = "#00cd00"></td>
+			<td id = "G6" class = "cube" bgcolor = "#00cd00"></td>
+			<td id = "R2" class = "cube" bgcolor = "#ff0000"></td>
+			<td id = "R0" class = "cube" bgcolor = "#ff0000"></td>
+			<td id = "R6" class = "cube" bgcolor = "#ff0000"></td>
+			<td id = "B2" class = "cube" bgcolor = "#0000ff"></td>
+			<td id = "B0" class = "cube" bgcolor = "#0000ff"></td>
+			<td id = "B6" class = "cube" bgcolor = "#0000ff"></td>
+			
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "button" onclick = "Move('u', true)">U'</td>
+			<td id = "" class = "blank"></td>
+		</tr>
+		
+		<tr>
+			<td id = "O3" class = "cube" bgcolor = "#ffa500"></td>
+			<td id = "O4" class = "cube" bgcolor = "#ffa500"></td>
+			<td id = "O5" class = "cube" bgcolor = "#ffa500"></td>
+			<td id = "G3" class = "cube" bgcolor = "#00cd00"></td>
+			<td id = "G4" class = "cube" bgcolor = "#00cd00"></td>
+			<td id = "G5" class = "cube" bgcolor = "#00cd00"></td>
+			<td id = "R3" class = "cube" bgcolor = "#ff0000"></td>
+			<td id = "R4" class = "cube" bgcolor = "#ff0000"></td>
+			<td id = "R5" class = "cube" bgcolor = "#ff0000"></td>
+			<td id = "B3" class = "cube" bgcolor = "#0000ff"></td>
+			<td id = "B4" class = "cube" bgcolor = "#0000ff"></td>
+			<td id = "B5" class = "cube" bgcolor = "#0000ff"></td>
+			
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "button" onclick = "Move('l', true)">L'</td>
+			<td id = "" class = "button" onclick = "Move('f', true)">F'</td>
+			<td id = "" class = "button" onclick = "Move('r', true)">R'</td>
+			
+			<td id = "" class = "button" onclick = "Move('b', true)">B'</td>		
+		</tr>
+		
+		<tr>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "Y1" class = "cube" bgcolor = "#ffff13"></td>
+			<td id = "Y8" class = "cube" bgcolor = "#ffff13"></td>
+			<td id = "Y7" class = "cube" bgcolor = "#ffff13"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "button" onclick = "Move('d', true)">D'</td>
+			<td id = "" class = "blank"></td>
+		</tr>
+		
+		<tr>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "Y2" class = "cube" bgcolor = "#ffff13"></td>
+			<td id = "Y0" class = "cube" bgcolor = "#ffff13"></td>
+			<td id = "Y6" class = "cube" bgcolor = "#ffff13"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "button" onclick = "LogFormula()">Log Formula</td>
+			<td id = "" class = "blank"></td>
+		</tr>
+		
+		<tr>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "Y3" class = "cube" bgcolor = "#ffff13"></td>
+			<td id = "Y4" class = "cube" bgcolor = "#ffff13"></td>
+			<td id = "Y5" class = "cube" bgcolor = "#ffff13"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "button" onclick = "Scramble()">Scramble</td>
+			<td id = "" class = "button" onclick = "alert(Solved())">Check Solve</td>
+			<td id = "" class = "button" onclick = "BRUTEFORCE()">BRUTE</td>
+		</tr>
+
+		<tr>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "blank"></td>
+			<td id = "" class = "button" onclick="Draw()">Draw</td>
+		</tr>
+	</table>
+	
+	<script>
+		var G0 = document.getElementById("G0");
+		var G1 = document.getElementById("G1");
+		var G2 = document.getElementById("G2");
+		var G3 = document.getElementById("G3");
+		var G4 = document.getElementById("G4");
+		var G5 = document.getElementById("G5");
+		var G6 = document.getElementById("G6");
+		var G7 = document.getElementById("G7");
+		var G8 = document.getElementById("G8");
+		
+		var B0 = document.getElementById("B0");
+		var B1 = document.getElementById("B1");
+		var B2 = document.getElementById("B2");
+		var B3 = document.getElementById("B3");
+		var B4 = document.getElementById("B4");
+		var B5 = document.getElementById("B5");
+		var B6 = document.getElementById("B6");
+		var B7 = document.getElementById("B7");
+		var B8 = document.getElementById("B8");
+		
+		var O0 = document.getElementById("O0");
+		var O1 = document.getElementById("O1");
+		var O2 = document.getElementById("O2");
+		var O3 = document.getElementById("O3");
+		var O4 = document.getElementById("O4");
+		var O5 = document.getElementById("O5");
+		var O6 = document.getElementById("O6");
+		var O7 = document.getElementById("O7");
+		var O8 = document.getElementById("O8");
+		
+		var R0 = document.getElementById("R0");
+		var R1 = document.getElementById("R1");
+		var R2 = document.getElementById("R2");
+		var R3 = document.getElementById("R3");
+		var R4 = document.getElementById("R4");
+		var R5 = document.getElementById("R5");
+		var R6 = document.getElementById("R6");
+		var R7 = document.getElementById("R7");
+		var R8 = document.getElementById("R8");
+		
+		var W0 = document.getElementById("W0");
+		var W1 = document.getElementById("W1");
+		var W2 = document.getElementById("W2");
+		var W3 = document.getElementById("W3");
+		var W4 = document.getElementById("W4");
+		var W5 = document.getElementById("W5");
+		var W6 = document.getElementById("W6");
+		var W7 = document.getElementById("W7");
+		var W8 = document.getElementById("W8");
+		
+		var Y0 = document.getElementById("Y0");
+		var Y1 = document.getElementById("Y1");
+		var Y2 = document.getElementById("Y2");
+		var Y3 = document.getElementById("Y3");
+		var Y4 = document.getElementById("Y4");
+		var Y5 = document.getElementById("Y5");
+		var Y6 = document.getElementById("Y6");
+		var Y7 = document.getElementById("Y7");
+		var Y8 = document.getElementById("Y8");
+		
+		var Cube = [
+			["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8"],
+			["B0", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"],
+			["O0", "O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8"],
+			["R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"],
+			["W0", "W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
+			["Y0", "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8"]
+		];
+
+		var Backup = [
+			["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8"],
+			["B0", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"],
+			["O0", "O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8"],
+			["R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"],
+			["W0", "W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
+			["Y0", "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8"]
+		];
+		
+		var Formula = [];
+		var CurrentStep;
+		var solve = true;
+		
+		var buf1;
+		var buf2;
+		var buf3;
+		var buf4;
+		
+		const LogFormula = () =>{
+			for(let i in Formula) console.log(`${i} : ${Formula[i]}`);
+		};
+		
+		
+		function Scramble(isDrawing = false) {
+			let a = prompt("Enter number of moves:");
+			let CurSt;
+			for (let i = 0; i < a; i++){
+				CurSt =  Math.floor(Math.random() * (11 - 0 + 1)) + 0;
+				switch(CurSt) {
+					case 0: Move("F");
+						Formula[i] = "F";
+						//if (logic) console.log("Moving F");
+					break;
+					case 1: Move("B", isDrawing);
+						Formula[i] = "B";
+						//if (logic) console.log("Moving B");
+					break;
+					case 2: Move("L", isDrawing);
+						Formula[i] - "L";
+						//if (logic) console.log("Moving L");
+					break;
+					case 3: Move("R", isDrawing); 
+						Formula[i] = "R";
+						//if (logic) console.log("Moving R");
+					break;
+					case 4: Move("U", isDrawing);
+						Formula[i] = "U";
+						//if (logic) console.log("Moving U");
+					break;
+					case 5: Move("D", isDrawing);
+						Formula[i] = "D";
+						//if (logic) console.log("Moving D");
+					break;
+					case 6: Move("f", isDrawing);
+						Formula[i] = "f";
+						//if (logic) console.log("Moving F´");
+					break;
+					case 7: Move("b", isDrawing);
+						Formula[i] = "b";
+						//if (logic) console.log("Moving B´");
+					break;
+					case 8: Move("l", isDrawing);
+						Formula[i] = "l";
+						//if (logic) console.log("Moving L´");
+					break;
+					case 9: Move("r", isDrawing);
+						Formula[i] = "r";
+						//if (logic) console.log("Moving R´");
+					break;
+					case 10: Move("u", isDrawing);
+						Formula[i] = "u";
+						//if (logic) console.log("Moving U´");
+					break;
+					case 11: Move("d", isDrawing);
+						Formula[i] = "d";
+						//if (logic) console.log("Moving D´");
+					break;
+
+					default:
+						console.log("default case");
+					break;
+				};
+			};
+		};
+		
+		function BRUTEFORCE(isDrawing = false){
+			let i = 0;
+			while (!Solved()){
+				ApplyFormula(isDrawing);
+				i++;
+			};
+			console.log(`Solved in ${i} cycles`);
+		};
+		
+		function Solved() {
+			for (let i = 0; i < Cube.length; i++){
+				for (let j = 0; j < 6; j++){
+					if (Cube[i][j] != Backup[i][j]) return false; 
+				};
+			};
+			return true;
+		};
+
+		function GetFormula() {
+			var length = prompt("Please enter sequence length");
+			
+			for (let i = 0; i < length; i++) {
+				Formula[i] = prompt(`please enter sequence step number ${i + 1}`);
+			};
+		};
+		
+		function ApplyFormula(isDrawing = false) {
+			for (let i = 0; i < Formula.length; i++) {
+				Move(Formula[i]);
+			};
+			if(isDrawing) Draw();
+		};
+		
+		function ApplyFormulaN(isDrawing = false) {
+			var times = prompt("Please enter cycles to repeat");
+			for (let i = 0; i < times; i++) {
+				for (let j = 0; j < Formula.length; j++) {
+					Move(Formula[j]);
+				};
+			};
+			if (isDrawing) Draw();
+		};
+		
+		/*function Apply(step) {
+			Move(step);
+		};*/
+		
+		function Move(step, isDrawing = false) {
+			switch(step) {
+				case "F":
+					buf1 = Cube[2][7];
+					buf2 = Cube[4][5];
+					buf3 = Cube[3][3];
+					buf4 = Cube[5][1];
+					Cube[5][1] = buf3;
+					Cube[3][3] = buf2;
+					Cube[4][5] = buf1;
+					Cube[2][7] = buf4;
+					
+					buf1 = Cube[2][6];
+					buf2 = Cube[4][4];
+					buf3 = Cube[3][2];
+					buf4 = Cube[5][8];
+					Cube[5][8] = buf3;
+					Cube[3][2] = buf2;
+					Cube[4][4] = buf1;
+					Cube[2][6] = buf4;
+					
+					buf1 = Cube[2][5];
+					buf2 = Cube[4][3];
+					buf3 = Cube[3][1];
+					buf4 = Cube[5][7];
+					Cube[5][7] = buf3;
+					Cube[3][1] = buf2;
+					Cube[4][3] = buf1;
+					Cube[2][5] = buf4;
+					
+					buf1 = Cube[0][1];
+					buf2 = Cube[0][7];
+					buf3 = Cube[0][5];
+					buf4 = Cube[0][3];
+					Cube[0][3] = buf3;
+					Cube[0][5] = buf2;
+					Cube[0][7] = buf1;
+					Cube[0][1] = buf4;
+					
+					buf1 = Cube[0][8];
+					buf2 = Cube[0][6];
+					buf3 = Cube[0][4];
+					buf4 = Cube[0][2];
+					Cube[0][2] = buf3;
+					Cube[0][4] = buf2;
+					Cube[0][6] = buf1;
+					Cube[0][8] = buf4;
+				break;
+				
+				case "B":
+					buf1 = Cube[2][1];
+					buf2 = Cube[5][3];
+					buf3 = Cube[3][5];
+					buf4 = Cube[4][7];
+					Cube[4][7] = buf3;
+					Cube[3][5] = buf2;
+					Cube[5][3] = buf1;
+					Cube[2][1] = buf4;
+					
+					buf1 = Cube[2][2];
+					buf2 = Cube[5][4];
+					buf3 = Cube[3][6];
+					buf4 = Cube[4][8];
+					Cube[4][8] = buf3;
+					Cube[3][6] = buf2;
+					Cube[5][4] = buf1;
+					Cube[2][2] = buf4;
+					
+					buf1 = Cube[2][3];
+					buf2 = Cube[5][5];
+					buf3 = Cube[3][7];
+					buf4 = Cube[4][1];
+					Cube[4][1] = buf3;
+					Cube[3][7] = buf2;
+					Cube[5][5] = buf1;
+					Cube[2][3] = buf4;
+					
+					buf1 = Cube[1][1];
+					buf2 = Cube[1][7];
+					buf3 = Cube[1][5];
+					buf4 = Cube[1][3];
+					Cube[1][3] = buf3;
+					Cube[1][5] = buf2;
+					Cube[1][7] = buf1;
+					Cube[1][1] = buf4;
+					
+					buf1 = Cube[1][8];
+					buf2 = Cube[1][6];
+					buf3 = Cube[1][4];
+					buf4 = Cube[1][2];
+					Cube[1][2] = buf3;
+					Cube[1][4] = buf2;
+					Cube[1][6] = buf1;
+					Cube[1][8] = buf4;
+				break;
+				
+				case "L":
+					buf1 = Cube[0][1];
+					buf2 = Cube[5][1];
+					buf3 = Cube[1][5];
+					buf4 = Cube[4][1];
+					Cube[4][1] = buf3;
+					Cube[1][5] = buf2;
+					Cube[5][1] = buf1;
+					Cube[0][1] = buf4;
+					
+					buf1 = Cube[0][2];
+					buf2 = Cube[5][2];
+					buf3 = Cube[1][6];
+					buf4 = Cube[4][2];
+					Cube[4][2] = buf3;
+					Cube[1][6] = buf2;
+					Cube[5][2] = buf1;
+					Cube[0][2] = buf4;
+					
+					buf1 = Cube[0][3];
+					buf2 = Cube[5][3];
+					buf3 = Cube[1][7];
+					buf4 = Cube[4][3];
+					Cube[4][3] = buf3;
+					Cube[1][7] = buf2;
+					Cube[5][3] = buf1;
+					Cube[0][3] = buf4;
+					
+					buf1 = Cube[2][1];
+					buf2 = Cube[2][7];
+					buf3 = Cube[2][5];
+					buf4 = Cube[2][3];
+					Cube[2][3] = buf3;
+					Cube[2][5] = buf2;
+					Cube[2][7] = buf1;
+					Cube[2][1] = buf4;
+					
+					buf1 = Cube[2][8];
+					buf2 = Cube[2][6];
+					buf3 = Cube[2][4];
+					buf4 = Cube[2][2];
+					Cube[2][2] = buf3;
+					Cube[2][4] = buf2;
+					Cube[2][6] = buf1;
+					Cube[2][8] = buf4;
+				break;
+				
+				case "R":
+					buf1 = Cube[0][7];
+					buf2 = Cube[4][7];
+					buf3 = Cube[1][3];
+					buf4 = Cube[5][7];
+					Cube[5][7] = buf3;
+					Cube[1][3] = buf2;
+					Cube[4][7] = buf1;
+					Cube[0][7] = buf4;
+					
+					buf1 = Cube[0][6];
+					buf2 = Cube[4][6];
+					buf3 = Cube[1][2];
+					buf4 = Cube[5][6];
+					Cube[5][6] = buf3;
+					Cube[1][2] = buf2;
+					Cube[4][6] = buf1;
+					Cube[0][6] = buf4;
+					
+					buf1 = Cube[0][5];
+					buf2 = Cube[4][5];
+					buf3 = Cube[1][1];
+					buf4 = Cube[5][5];
+					Cube[5][5] = buf3;
+					Cube[1][1] = buf2;
+					Cube[4][5] = buf1;
+					Cube[0][5] = buf4;
+					
+					buf1 = Cube[3][1];
+					buf2 = Cube[3][7];
+					buf3 = Cube[3][5];
+					buf4 = Cube[3][3];
+					Cube[3][3] = buf3;
+					Cube[3][5] = buf2;
+					Cube[3][7] = buf1;
+					Cube[3][1] = buf4;
+					
+					buf1 = Cube[3][8];
+					buf2 = Cube[3][6];
+					buf3 = Cube[3][4];
+					buf4 = Cube[3][2];
+					Cube[3][2] = buf3;
+					Cube[3][4] = buf2;
+					Cube[3][6] = buf1;
+					Cube[3][8] = buf4;
+				break;
+				
+				case "U":
+					buf1 = Cube[0][1];
+					buf2 = Cube[2][1];
+					buf3 = Cube[1][1];
+					buf4 = Cube[3][1];
+					Cube[3][1] = buf3;
+					Cube[1][1] = buf2;
+					Cube[2][1] = buf1;
+					Cube[0][1] = buf4;
+					
+					buf1 = Cube[0][8];
+					buf2 = Cube[2][8];
+					buf3 = Cube[1][8];
+					buf4 = Cube[3][8];
+					Cube[3][8] = buf3;
+					Cube[1][8] = buf2;
+					Cube[2][8] = buf1;
+					Cube[0][8] = buf4;
+					
+					buf1 = Cube[0][7];
+					buf2 = Cube[2][7];
+					buf3 = Cube[1][7];
+					buf4 = Cube[3][7];
+					Cube[3][7] = buf3;
+					Cube[1][7] = buf2;
+					Cube[2][7] = buf1;
+					Cube[0][7] = buf4;
+					
+					buf1 = Cube[4][1];
+					buf2 = Cube[4][7];
+					buf3 = Cube[4][5];
+					buf4 = Cube[4][3];
+					Cube[4][3] = buf3;
+					Cube[4][5] = buf2;
+					Cube[4][7] = buf1;
+					Cube[4][1] = buf4;
+					
+					buf1 = Cube[4][8];
+					buf2 = Cube[4][6];
+					buf3 = Cube[4][4];
+					buf4 = Cube[4][2];
+					Cube[4][2] = buf3;
+					Cube[4][4] = buf2;
+					Cube[4][6] = buf1;
+					Cube[4][8] = buf4;
+				break;
+				
+				case "D":
+					buf1 = Cube[0][3];
+					buf2 = Cube[3][3];
+					buf3 = Cube[1][3];
+					buf4 = Cube[2][3];
+					Cube[2][3] = buf3;
+					Cube[1][3] = buf2;
+					Cube[3][3] = buf1;
+					Cube[0][3] = buf4;
+					
+					buf1 = Cube[0][4];
+					buf2 = Cube[3][4];
+					buf3 = Cube[1][4];
+					buf4 = Cube[2][4];
+					Cube[2][4] = buf3;
+					Cube[1][4] = buf2;
+					Cube[3][4] = buf1;
+					Cube[0][4] = buf4;
+					
+					buf1 = Cube[0][5];
+					buf2 = Cube[3][5];
+					buf3 = Cube[1][5];
+					buf4 = Cube[2][5];
+					Cube[2][5] = buf3;
+					Cube[1][5] = buf2;
+					Cube[3][5] = buf1;
+					Cube[0][5] = buf4;
+					
+					buf1 = Cube[5][1];
+					buf2 = Cube[5][7];
+					buf3 = Cube[5][5];
+					buf4 = Cube[5][3];
+					Cube[5][3] = buf3;
+					Cube[5][5] = buf2;
+					Cube[5][7] = buf1;
+					Cube[5][1] = buf4;
+					
+					buf1 = Cube[5][8];
+					buf2 = Cube[5][6];
+					buf3 = Cube[5][4];
+					buf4 = Cube[5][2];
+					Cube[5][2] = buf3;
+					Cube[5][4] = buf2;
+					Cube[5][6] = buf1;
+					Cube[5][8] = buf4;
+				break;
+				
+				case "f":
+					buf1 = Cube[2][7];
+					buf2 = Cube[4][5];
+					buf3 = Cube[3][3];
+					buf4 = Cube[5][1];
+					Cube[2][7] = buf2;
+					Cube[4][5] = buf3;
+					Cube[3][3] = buf4;
+					Cube[5][1] = buf1;
+					
+					buf1 = Cube[2][6];
+					buf2 = Cube[4][4];
+					buf3 = Cube[3][2];
+					buf4 = Cube[5][8];
+					Cube[2][6] = buf2;
+					Cube[4][4] = buf3;
+					Cube[3][2] = buf4;
+					Cube[5][8] = buf1;
+					
+					buf1 = Cube[2][5];
+					buf2 = Cube[4][3];
+					buf3 = Cube[3][1];
+					buf4 = Cube[5][7];
+					Cube[2][5] = buf2;
+					Cube[4][3] = buf3;
+					Cube[3][1] = buf4;
+					Cube[5][7] = buf1;
+					
+					buf1 = Cube[0][1];
+					buf2 = Cube[0][7];
+					buf3 = Cube[0][5];
+					buf4 = Cube[0][3];
+					Cube[0][1] = buf2;
+					Cube[0][7] = buf3;
+					Cube[0][5] = buf4;
+					Cube[0][3] = buf1;
+					
+					buf1 = Cube[0][8];
+					buf2 = Cube[0][6];
+					buf3 = Cube[0][4];
+					buf4 = Cube[0][2];
+					Cube[0][8] = buf2;
+					Cube[0][6] = buf3;
+					Cube[0][4] = buf4;
+					Cube[0][2] = buf1;
+				break;
+				
+				case "b":
+					buf1 = Cube[2][1];
+					buf2 = Cube[5][3];
+					buf3 = Cube[3][5];
+					buf4 = Cube[4][7];
+					Cube[2][1] = buf2;
+					Cube[5][3] = buf3;
+					Cube[3][5] = buf4;
+					Cube[4][7] = buf1;
+					
+					buf1 = Cube[2][2];
+					buf2 = Cube[5][4];
+					buf3 = Cube[3][6];
+					buf4 = Cube[4][8];
+					Cube[2][2] = buf2;
+					Cube[5][4] = buf3;
+					Cube[3][6] = buf4;
+					Cube[4][8] = buf1;
+					
+					buf1 = Cube[2][3];
+					buf2 = Cube[5][5];
+					buf3 = Cube[3][7];
+					buf4 = Cube[4][1];
+					Cube[2][3] = buf2;
+					Cube[5][5] = buf3;
+					Cube[3][7] = buf4;
+					Cube[4][1] = buf1;
+					
+					buf1 = Cube[1][1];
+					buf2 = Cube[1][7];
+					buf3 = Cube[1][5];
+					buf4 = Cube[1][3];
+					Cube[1][1] = buf2;
+					Cube[1][7] = buf3;
+					Cube[1][5] = buf4;
+					Cube[1][3] = buf1;
+					
+					buf1 = Cube[1][8];
+					buf2 = Cube[1][6];
+					buf3 = Cube[1][4];
+					buf4 = Cube[1][2];
+					Cube[1][8] = buf2;
+					Cube[1][6] = buf3;
+					Cube[1][4] = buf4;
+					Cube[1][2] = buf1;
+				break;
+				
+				case "l":
+					buf1 = Cube[0][1];
+					buf2 = Cube[5][1];
+					buf3 = Cube[1][5];
+					buf4 = Cube[4][1];
+					Cube[0][1] = buf2;
+					Cube[5][1] = buf3;
+					Cube[1][5] = buf4;
+					Cube[4][1] = buf1;
+					
+					buf1 = Cube[0][2];
+					buf2 = Cube[5][2];
+					buf3 = Cube[1][6];
+					buf4 = Cube[4][2];
+					Cube[0][2] = buf2;
+					Cube[5][2] = buf3;
+					Cube[1][6] = buf4;
+					Cube[4][2] = buf1;
+					
+					buf1 = Cube[0][3];
+					buf2 = Cube[5][3];
+					buf3 = Cube[1][7];
+					buf4 = Cube[4][3];
+					Cube[0][3] = buf2;
+					Cube[5][3] = buf3;
+					Cube[1][7] = buf4;
+					Cube[4][3] = buf1;
+					
+					buf1 = Cube[2][1];
+					buf2 = Cube[2][7];
+					buf3 = Cube[2][5];
+					buf4 = Cube[2][3];
+					Cube[2][1] = buf2;
+					Cube[2][7] = buf3;
+					Cube[2][5] = buf4;
+					Cube[2][3] = buf1;
+					
+					buf1 = Cube[2][8];
+					buf2 = Cube[2][6];
+					buf3 = Cube[2][4];
+					buf4 = Cube[2][2];
+					Cube[2][8] = buf2;
+					Cube[2][6] = buf3;
+					Cube[2][4] = buf4;
+					Cube[2][2] = buf1;
+				break;
+				
+				case "r":
+					buf1 = Cube[0][7];
+					buf2 = Cube[4][7];
+					buf3 = Cube[1][3];
+					buf4 = Cube[5][7];
+					Cube[0][7] = buf2;
+					Cube[4][7] = buf3;
+					Cube[1][3] = buf4;
+					Cube[5][7] = buf1;
+					
+					buf1 = Cube[0][6];
+					buf2 = Cube[4][6];
+					buf3 = Cube[1][2];
+					buf4 = Cube[5][6];
+					Cube[0][6] = buf2;
+					Cube[4][6] = buf3;
+					Cube[1][2] = buf4;
+					Cube[5][6] = buf1;
+					
+					buf1 = Cube[0][5];
+					buf2 = Cube[4][5];
+					buf3 = Cube[1][1];
+					buf4 = Cube[5][5];
+					Cube[0][5] = buf2;
+					Cube[4][5] = buf3;
+					Cube[1][1] = buf4;
+					Cube[5][5] = buf1;
+					
+					buf1 = Cube[3][1];
+					buf2 = Cube[3][7];
+					buf3 = Cube[3][5];
+					buf4 = Cube[3][3];
+					Cube[3][1] = buf2;
+					Cube[3][7] = buf3;
+					Cube[3][5] = buf4;
+					Cube[3][3] = buf1;
+					
+					buf1 = Cube[3][8];
+					buf2 = Cube[3][6];
+					buf3 = Cube[3][4];
+					buf4 = Cube[3][2];
+					Cube[3][8] = buf2;
+					Cube[3][6] = buf3;
+					Cube[3][4] = buf4;
+					Cube[3][2] = buf1;
+				break;
+				
+				case "u":
+					buf1 = Cube[0][1];
+					buf2 = Cube[2][1];
+					buf3 = Cube[1][1];
+					buf4 = Cube[3][1];
+					Cube[0][1] = buf2;
+					Cube[2][1] = buf3;
+					Cube[1][1] = buf4;
+					Cube[3][1] = buf1;
+					
+					buf1 = Cube[0][8];
+					buf2 = Cube[2][8];
+					buf3 = Cube[1][8];
+					buf4 = Cube[3][8];
+					Cube[0][8] = buf2;
+					Cube[2][8] = buf3;
+					Cube[1][8] = buf4;
+					Cube[3][8] = buf1;
+					
+					buf1 = Cube[0][7];
+					buf2 = Cube[2][7];
+					buf3 = Cube[1][7];
+					buf4 = Cube[3][7];
+					Cube[0][7] = buf2;
+					Cube[2][7] = buf3;
+					Cube[1][7] = buf4;
+					Cube[3][7] = buf1;
+					
+					buf1 = Cube[4][1];
+					buf2 = Cube[4][7];
+					buf3 = Cube[4][5];
+					buf4 = Cube[4][3];
+					Cube[4][1] = buf2;
+					Cube[4][7] = buf3;
+					Cube[4][5] = buf4;
+					Cube[4][3] = buf1;
+					
+					buf1 = Cube[4][8];
+					buf2 = Cube[4][6];
+					buf3 = Cube[4][4];
+					buf4 = Cube[4][2];
+					Cube[4][8] = buf2;
+					Cube[4][6] = buf3;
+					Cube[4][4] = buf4;
+					Cube[4][2] = buf1;
+				break;
+				
+				case "d":
+					buf1 = Cube[0][3];
+					buf2 = Cube[3][3];
+					buf3 = Cube[1][3];
+					buf4 = Cube[2][3];
+					Cube[0][3] = buf2;
+					Cube[3][3] = buf3;
+					Cube[1][3] = buf4;
+					Cube[2][3] = buf1;
+					
+					buf1 = Cube[0][4];
+					buf2 = Cube[3][4];
+					buf3 = Cube[1][4];
+					buf4 = Cube[2][4];
+					Cube[0][4] = buf2;
+					Cube[3][4] = buf3;
+					Cube[1][4] = buf4;
+					Cube[2][4] = buf1;
+					
+					buf1 = Cube[0][5];
+					buf2 = Cube[3][5];
+					buf3 = Cube[1][5];
+					buf4 = Cube[2][5];
+					Cube[0][5] = buf2;
+					Cube[3][5] = buf3;
+					Cube[1][5] = buf4;
+					Cube[2][5] = buf1;
+					
+					buf1 = Cube[5][1];
+					buf2 = Cube[5][7];
+					buf3 = Cube[5][5];
+					buf4 = Cube[5][3];
+					Cube[5][1] = buf2;
+					Cube[5][7] = buf3;
+					Cube[5][5] = buf4;
+					Cube[5][3] = buf1;
+					
+					buf1 = Cube[5][8];
+					buf2 = Cube[5][6];
+					buf3 = Cube[5][4];
+					buf4 = Cube[5][2];
+					Cube[5][8] = buf2;
+					Cube[5][6] = buf3;
+					Cube[5][4] = buf4;
+					Cube[5][2] = buf1;
+				break;
+			};
+			if (isDrawing) Draw();
+		};
+		
+		function Draw() {
+			switch(Cube[0][1]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": G1.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": G1.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": G1.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": G1.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": G1.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": G1.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[0][2]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": G2.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": G2.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": G2.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": G2.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": G2.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": G2.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[0][3]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": G3.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": G3.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": G3.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": G3.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": G3.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": G3.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[0][4]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": G4.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": G4.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": G4.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": G4.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": G4.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": G4.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[0][5]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": G5.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": G5.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": G5.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": G5.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": G5.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": G5.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[0][6]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": G6.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": G6.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": G6.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": G6.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": G6.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": G6.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[0][7]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": G7.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": G7.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": G7.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": G7.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": G7.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": G7.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[0][8]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": G8.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": G8.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": G8.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": G8.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": G8.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": G8.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[1][1]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": B1.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": B1.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": B1.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": B1.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": B1.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": B1.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[1][2]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": B2.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": B2.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": B2.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": B2.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": B2.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": B2.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[1][3]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": B3.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": B3.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": B3.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": B3.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": B3.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": B3.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[1][4]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": B4.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": B4.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": B4.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": B4.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": B4.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": B4.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[1][5]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": B5.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": B5.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": B5.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": B5.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": B5.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": B5.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[1][6]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": B6.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": B6.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": B6.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": B6.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": B6.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": B6.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[1][7]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": B7.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": B7.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": B7.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": B7.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": B7.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": B7.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[1][8]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": B8.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": B8.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": B8.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": B8.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": B8.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": B8.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[2][1]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": O1.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": O1.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": O1.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": O1.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": O1.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": O1.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[2][2]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": O2.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": O2.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": O2.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": O2.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": O2.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": O2.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[2][3]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": O3.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": O3.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": O3.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": O3.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": O3.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": O3.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[2][4]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": O4.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": O4.bgColor = "#000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": O4.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": O4.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": O4.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": O4.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[2][5]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": O5.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": O5.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": O5.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": O5.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": O5.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": O5.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[2][6]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": O6.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": O6.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": O6.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": O6.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": O6.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": O6.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[2][7]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": O7.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": O7.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": O7.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": O7.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": O7.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": O7.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[2][8]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": O8.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": O8.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": O8.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": O8.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": O8.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": O8.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[3][1]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": R1.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": R1.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": R1.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": R1.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": R1.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": R1.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[3][2]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": R2.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": R2.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": R2.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": R2.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": R2.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": R2.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[3][3]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": R3.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": R3.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": R3.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": R3.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": R3.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": R3.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[3][4]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": R4.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": R4.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": R4.bgColor = "#ffa500"; break;
+			
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": R4.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": R4.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": R4.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[3][5]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": R5.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": R5.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": R5.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": R5.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": R5.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": R5.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[3][6]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": R6.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": R6.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": R6.bgColor = "#ffa500"; break;
+			
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": R6.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": R6.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": R6.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[3][7]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": R7.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": R7.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": R7.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": R7.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": R7.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": R7.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[3][8]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": R8.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": R8.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": R8.bgColor = "#ffa500"; break;
+			
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": R8.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": R8.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": R8.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[4][1]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": W1.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": W1.bgColor = "#000fff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": W1.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": W1.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": W1.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": W1.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[4][2]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": W2.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": W2.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": W2.bgColor = "#ffa500"; break;
+			
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": W2.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": W2.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": W2.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[4][3]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": W3.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": W3.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": W3.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": W3.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": W3.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": W3.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[4][3]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": W3.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": W3.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": W3.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": W3.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": W3.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": W3.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[4][4]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": W4.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": W4.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": W4.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": W4.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": W4.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": W4.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[4][5]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": W5.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": W5.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": W5.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": W5.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": W5.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": W5.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[4][6]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": W6.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": W6.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": W6.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": W6.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": W6.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": W6.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[4][7]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": W7.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": W7.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": W7.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": W7.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": W7.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": W7.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[4][8]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": W8.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": W8.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": W8.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": W8.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": W8.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": W8.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[5][1]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": Y1.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": Y1.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": Y1.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": Y1.bgColor = "#ff0000"; break;
+				
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": Y1.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": Y1.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[5][2]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": Y2.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": Y2.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": Y2.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": Y2.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": Y2.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": Y2.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[5][3]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": Y3.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": Y3.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": Y3.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": Y3.bgColor = "#ff0000"; break;
+			
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": Y3.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": Y3.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[5][4]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": Y4.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": Y4.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": Y4.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": Y4.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": Y4.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": Y4.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[5][5]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": Y5.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": Y5.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": Y5.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": Y5.bgColor = "#ff0000"; break;
+			
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": Y5.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": Y5.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[5][6]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": Y6.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": Y6.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": Y6.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": Y6.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": Y6.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": Y6.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[5][7]) {
+				case "G1":
+				case "G3":
+				case "G5":
+				case "G7": Y7.bgColor = "#00cd00"; break;
+				
+				case "B1":
+				case "B3":
+				case "B5":
+				case "B7": Y7.bgColor = "#0000ff"; break;
+				
+				case "O1":
+				case "O3":
+				case "O5":
+				case "O7": Y7.bgColor = "#ffa500"; break;
+				
+				case "R1":
+				case "R3":
+				case "R5":
+				case "R7": Y7.bgColor = "#ff0000"; break;
+			
+				case "W1":
+				case "W3":
+				case "W5":
+				case "W7": Y7.bgColor = "#ffffff"; break;
+				
+				case "Y1":
+				case "Y3":
+				case "Y5":
+				case "Y7": Y7.bgColor = "#ffff13"; break;
+			};
+			
+			switch(Cube[5][8]) {
+				case "G2":
+				case "G4":
+				case "G6":
+				case "G8": Y8.bgColor = "#00cd00"; break;
+				
+				case "B2":
+				case "B4":
+				case "B6":
+				case "B8": Y8.bgColor = "#0000ff"; break;
+				
+				case "O2":
+				case "O4":
+				case "O6":
+				case "O8": Y8.bgColor = "#ffa500"; break;
+				
+				case "R2":
+				case "R4":
+				case "R6":
+				case "R8": Y8.bgColor = "#ff0000"; break;
+				
+				case "W2":
+				case "W4":
+				case "W6":
+				case "W8": Y8.bgColor = "#ffffff"; break;
+				
+				case "Y2":
+				case "Y4":
+				case "Y6":
+				case "Y8": Y8.bgColor = "#ffff13"; break;
+			};
+		};
+		/*
+		Cho World Record:
+		 Formula = ["U", "U", "l", "D", "D", "L", "D", "D", "R", "F", "F", "D", "D", "r", "D", "D", "U", "U", "B", "U", "L", "U", "l", "R", "D", "L", "L", "F", "F", "U", "U", "r"] solved in 167 cycles
+
+		 Current World Record:
+		 Formula = ["F", "U", "U", "L", "L", "B", "B", "f", "U", "L", "L", "U", "R", "R", "D", "D", "l", "B", "L", "L", "b", "R", "R", "U", "U"] solved in 29 cycles
+
+		 Formula = ["l", "f", "U", "U", "L", "L", "d", "F", "R", "l", "F", "B", "U", "U", "L", "L", "U", "U", "B", "B", "U", "U", "b", "D","D", "L", "L", "D", "D"]
+
+		*/
+	</script>
+</body>
+
+</HTML>
